@@ -4,14 +4,6 @@ import recipeView from './views/recipeView.js';
 import 'core-js/stable'; // polyfiling
 import 'regenerator-runtime/runtime'; // polyfiling async / await
 
-const timeout = function (s) {
-  return new Promise(function (_, reject) {
-    setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
-    }, s * 1000);
-  });
-};
-
 // https://forkify-api.jonas.io/
 // api key be226632-7332-42f6-ac20-48d8ee6197a2
 // https://forkify-api.jonas.io/api/v2/recipes?search=pizza
@@ -31,12 +23,13 @@ const controlRecipes = async function () {
     // 2) Rendering recipe
     recipeView.render(model.state.recipe);
   } catch (err) {
-    alert(err);
+    recipeView.renderError();
   }
 };
 
-['hashchange', 'load'].forEach(ev =>
-  window.addEventListener(ev, controlRecipes),
-);
-// window.addEventListener('hashchange', controlRecipes);
-// window.addEventListener('load', controlRecipes);
+// Publisher - Subcriber Pattern
+const init = function () {
+  recipeView.addHandlerRender(controlRecipes);
+};
+
+init();
