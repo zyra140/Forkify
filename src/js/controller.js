@@ -1,14 +1,11 @@
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
+import searchView from './views/searchView.js';
+import resultsView from './views/resultsView.js';
 
 import 'core-js/stable'; // polyfiling
 import 'regenerator-runtime/runtime'; // polyfiling async / await
-
-// https://forkify-api.jonas.io/
-// api key be226632-7332-42f6-ac20-48d8ee6197a2
-// https://forkify-api.jonas.io/api/v2/recipes?search=pizza
-// https://forkify-api.jonas.io/api/v2/recipes/:id
-///////////////////////////////////////
+import { async } from 'regenerator-runtime';
 
 const controlRecipes = async function () {
   try {
@@ -27,9 +24,29 @@ const controlRecipes = async function () {
   }
 };
 
+const controlSearchResults = async function () {
+  try {
+    recipeView.renderSpinner();
+
+    // 1) Get search query
+    const query = searchView.getQuery();
+    if (!query) return;
+
+    // 2) Load search results
+    await model.loadSearchResults(query);
+
+    // 3) Render results
+    console.log(model.state);
+    resultsView.render(model.state.search.results);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // Publisher - Subcriber Pattern
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
+  searchView.addHandlerSearch(controlSearchResults);
 };
 
 init();
