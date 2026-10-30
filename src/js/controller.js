@@ -7,6 +7,11 @@ import 'core-js/stable'; // polyfiling
 import 'regenerator-runtime/runtime'; // polyfiling async / await
 import { async } from 'regenerator-runtime';
 
+// parcel - taki ilve server parcelowy, strona sie nie odswieza
+if (module.hot) {
+  module.hot.accept();
+}
+
 const controlRecipes = async function () {
   try {
     const id = window.location.hash.slice(1);
@@ -26,7 +31,7 @@ const controlRecipes = async function () {
 
 const controlSearchResults = async function () {
   try {
-    recipeView.renderSpinner();
+    resultsView.renderSpinner();
 
     // 1) Get search query
     const query = searchView.getQuery();
@@ -36,7 +41,6 @@ const controlSearchResults = async function () {
     await model.loadSearchResults(query);
 
     // 3) Render results
-    console.log(model.state);
     resultsView.render(model.state.search.results);
   } catch (err) {
     console.log(err);
